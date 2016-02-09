@@ -18,6 +18,12 @@
     (map #(+ n %) possible-moves))
   )
 
+(defn precursors
+  "Calculate the possible precursors to a given state"
+  [settings n]
+  (filter #(> % 0) (range (- n (:limit settings)) n)))
+
+
 ;;
 ;; nimber gives the nim-equivalent of the gotit position
 ;;

@@ -22,15 +22,13 @@ usually, the predicate p determines whether n is a member of a set of integers."
   [state]
   '())
 
-(defn end-state?
-  "true if the game is finished"
-  [state]
-  true)
+(defn preset-nimb [f] (partial f settings rules end-state?))
+
 
 (defn nimber
   "calculate the nimber of a game based on the possible game transitions (the rules)
 and the current state"
-  [settings rules ->nimber state]
+  [settings rules end-state? state]
   (if (end-state? state)
     0
-    (mex (into #{} (map #(->nimber settings %) (possible-next-states state))))))
+    (mex (into #{} (map #(nimber settings rules end-state? %) (rules state))))))
