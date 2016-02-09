@@ -1,5 +1,5 @@
-(ns ^:figwheel-always gotit.rules)
-
+(ns ^:figwheel-always gotit.rules
+    (:require [sprague-grundy.core :as core]))
 ;;;
 ;; The state of gotit is completely defined by a map containing
 ;;
@@ -17,3 +17,9 @@
   (let [possible-moves (range 1 (inc (min (- (:target settings) n) (:limit settings))))]
     (map #(+ n %) possible-moves))
   )
+
+;;
+;; nimber gives the nim-equivalent of the gotit position
+;;
+(defn nimber [settings n]
+  (let [remaining (- (:target settings) n)]))

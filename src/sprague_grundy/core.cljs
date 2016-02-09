@@ -17,7 +17,7 @@ usually, the predicate p determines whether n is a member of a set of integers."
 ;; (mex #{0 1 3 5 2}) => 4)
 ;; (mex #{1 3 5 2}) => 0
 
-(defn next-states
+(defn possible-next-states
   "return a list of possible next states"
   [state]
   '())
@@ -30,7 +30,7 @@ usually, the predicate p determines whether n is a member of a set of integers."
 (defn nimber
   "calculate the nimber of a game based on the possible game transitions (the rules)
 and the current state"
-  [possible-transitions state]
+  [settings rules ->nimber state]
   (if (end-state? state)
     0
-    (mex (into #{} (map nimber (possible-transitions state))))))
+    (mex (into #{} (map #(->nimber settings %) (possible-next-states state))))))
