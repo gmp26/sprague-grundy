@@ -1,31 +1,25 @@
 (ns ^:figwheel-always gotit.rules
     (:require [sprague-grundy.core :as core]))
 ;;;
-;; The state of gotit is completely defined by a map containing
+;; The state of gotit is completely defined by its settings
 ;;
-;; :n - the current location
+;; :start - the number we start on
 ;; :target - the number we are aiming for
-;; :limit - the maximum possible move each turn
+;; :limit - the maximum possible moves each turn
+;;
+;; and the current state.
 ;;;
 
-(def env (atom  {:target 23 :limit 4}))
-
-(defn rules
-  "The rules define the possible next states for the given settings - a derefed environment, and
-  the single state variable n."
-  [settings n]
-  (let [possible-moves (range 1 (inc (min (- (:target settings) n) (:limit settings))))]
-    (map #(+ n %) possible-moves))
-  )
+(defn followers
+  "followers are the states that can follow state according to the game rules."
+  [settings state]
+  (if (set? state)
+    (set (mapcat #(followers settings %) state))
+    (map #(+ state %) (range 1 (inc (min (- (:target settings) state) (:limit settings)))))))
 
 (defn precursors
-  "Calculate the possible precursors to a given state"
-  [settings n]
-  (filter #(> % 0) (range (- n (:limit settings)) n)))
-
-
-;;
-;; nimber gives the nim-equivalent of the gotit position
-;;
-(defn nimber [settings n]
-  (let [remaining (- (:target settings) n)]))
+  "Calculate the possible precursors to state according to the rules"
+  [settings state]
+  (if (set? state)
+    (set (mapcat #(precursors settings %) state))
+    (filter #(>= % (:start settings)) (range (- state (:limit settings)) state))))
