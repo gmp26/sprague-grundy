@@ -17,7 +17,7 @@
     (set (mapcat #(followers settings %) state))
     (map #(+ state %) (range 1 (inc (min (- (:target settings) state) (:limit settings)))))))
 
-(defn precursors
+#_(defn precursors
   "Calculate the possible precursors to state according to the rules"
   [settings state]
   (if (set? state)

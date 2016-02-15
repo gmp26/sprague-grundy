@@ -7,7 +7,7 @@
   [growth-fn settings a-set]
   (difference (growth-fn settings a-set) a-set))
 
-(defn <-states
+#_(defn <-states
   "enumerate all states backwards from end-state by following precursors"
   [settings]
   (reduce union #{}

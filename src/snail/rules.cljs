@@ -1,16 +1,19 @@
 (ns ^:figwheel-always snail.rules
     (:require [sprague-grundy.core :as core]))
 ;;;
-;; The state of a snail dot is the number of gaps to the next coin
+;; A snail state is a vector of coin locations
 ;;
-;;;
+
+(defn gaps [state]
+  "but the gaps between the coins are more useful"
+  (reverse (cons (first state) (map dec (map - (rest state) state)))))
 
 (defn followers
-  "followers are the states that can follow state(s) according to the game rules."
+  "followers are the states that can follow this state (or set of states) according to the game rules."
   [settings state]
   (if (set? state)
     (set (mapcat #(followers settings %) state))
-    (take (min (:limit settings) state) (range (dec state) 0 -1))))
+    state))
 
 
 #_(defn precursors
@@ -28,10 +31,9 @@
 
 (defn heap-equivalent
   "Returns a seq of equivalent nim heaps for a snail game-state"
-  [game-state]
-  (let [reversed (reverse (cons nil game-state))]
-    (map first (partition 2 (map - reversed (rest reversed))))
-    )
+  [state]
+  (map first (partition 2 (conj (vec (gaps state)) nil)))
+
 )
 
 ;;;;;; generic stuff
