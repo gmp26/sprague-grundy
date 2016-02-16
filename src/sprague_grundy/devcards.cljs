@@ -66,7 +66,8 @@
                                           " :target " (:target settings)
                                           " :limit " (:limit settings)) "}"]
                [:p (str "nim-heap equivalent => " (str ((:heap-equivalent settings) (:start settings))))]
-;               [:p (str " followers [1 3] => " ((:followers settings) settings [1 3]))]
+               [:p (str " moves [4 8 13 18] => " (snail/moves [4 8 13 18]))]
+               [:p (str " followers [4 8 13 18] => " (snail/followers nil [4 8 13 18]))]
 
                ])))
 

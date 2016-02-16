@@ -13,15 +13,22 @@
   [previous-loc loc]
   (range (inc previous-loc) loc))
 
-(defn location-followers [state]
-  (map location-follower (partition 2 1 state)))
+(defn moves [state]
+  (map #(apply (comp rest range) %) (partition 2 1 (cons -1 state))))
+
+(defn quick-moves [state]
+  (filter #() (range 0 (apply max state))))
+
+(defn location-keyed-moves [state]
+  (zipmap state (moves state)))
 
 (defn followers
   "followers are the states that can follow this state (or set of states) according to the game rules."
   [settings state]
   (if (set? state)
     (set (mapcat #(followers settings %) state))
-    state))
+    (for [[key value] (location-keyed-moves state)]
+      [key value])))
 
 #_(defn precursors
   "Calculate the possible precursors to state(s) according to the rules"
