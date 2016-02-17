@@ -9,17 +9,16 @@
 ;;
 ;; and the current state.
 ;;;
-
+(comment)
 (defn followers
   "followers are the states that can follow state according to the game rules."
-  [settings state]
+  [target limit state]
   (if (set? state)
-    (set (mapcat #(followers settings %) state))
-    (map #(+ state %) (range 1 (inc (min (- (:target settings) state) (:limit settings)))))))
+    (set (mapcat #(followers target limit  %) state))
+    (map #(+ state %) (range 1 (inc (min (- target state) limit))))))
 
-#_(defn precursors
-  "Calculate the possible precursors to state according to the rules"
+
+(defn heap-equivalent
+  "The nim heap equivalent of a gotit state"
   [settings state]
-  (if (set? state)
-    (set (mapcat #(precursors settings %) state))
-    (filter #(>= % (:start settings)) (range (- state (:limit settings)) state))))
+  (mod (- (:target settings) state) (inc (:limit settings))))

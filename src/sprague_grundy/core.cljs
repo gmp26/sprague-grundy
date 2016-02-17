@@ -7,13 +7,6 @@
   [growth-fn settings a-set]
   (difference (growth-fn settings a-set) a-set))
 
-#_(defn <-states
-  "enumerate all states backwards from end-state by following precursors"
-  [settings]
-  (reduce union #{}
-          (take-while #(not= % #{})
-                      (iterate #(boundary (:precursors settings) settings %) #{(:target settings)}))))
-
 (defn states->
   "enumerate all states forwards from start-state by following precursors"
   [settings]
@@ -45,3 +38,30 @@ usually, the predicate p determines whether n is a member of a set of integers."
           follower-gs (into #{} (map #(grundy-number settings %) followers))]
       (prn state " " followers " " follower-gs)
       (mex follower-gs))))
+
+(defn nim-sum [heaps]
+  (apply bit-xor heaps))
+
+
+(defn msb
+  "most significant bit of a positive integer or zero"
+  [n]
+  (last (take-while #(>= n (Math.pow 2 %)) (range)))
+  )
+
+(defn viable-heaps
+  "Return the list of heaps in which we could make a winning move"
+  [heaps]
+  (let [nimber (nim-sum heaps)]
+    (if (= nimber 0)
+      []
+      (distinct (filter #(bit-test % (msb (nim-sum heaps))) heaps)))
+    )
+  )
+
+(defn next-game-state
+  [settings game-state]
+  (let [change-this (rand-nth (viable-heaps ((:heap-equivalent settings) game-state)))]
+    (if (empty? change-this)
+      "We're in a P position. Pick the largest and move a small amount"
+      ())))
