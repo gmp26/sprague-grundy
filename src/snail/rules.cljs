@@ -13,19 +13,23 @@
   [previous-loc loc]
   (range (inc previous-loc) loc))
 
-(defn- moves [state]
+(defn- unlimited-moves [state]
   (filter #(not ((set state) %)) (range 0 (apply max state)))
   )
+
+(defn- move-location [state move]
+  (first (filter #(> % move) state)))
 
 (defn- make-move
   "move the first state location bigger than the move "
   [state move]
-  (let [move-location (first (filter #(> % move) state))]
-    (drop-while zero? (map #(if (= % move-location) move %) state)))
+  (drop-while zero? (map #(if (= % (move-location state move)) move %) state))
   )
 
-(defn- location-keyed-moves [state]
-  (zipmap state (moves state)))
+(defn- limited-moves [limit state]
+  "return those moves that are less than the move limit"
+  (filter (fn [move] (<= (- (move-location state move) move) limit))  (unlimited-moves state))
+  )
 
 ;;;
 ;; Public
@@ -35,7 +39,7 @@
   [state]
   (if (set? state)
     (set (mapcat followers state))
-    (map #(make-move state %) (moves state))))
+    (map #(make-move state %) (unlimited-moves state))))
 
 (def end-state? empty?)
 
