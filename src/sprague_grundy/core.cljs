@@ -18,7 +18,7 @@
   (difference (followers a-set) a-set))
 
 (defn states->
-  "enumerate all states forwards from start-state by following precursors"
+  "enumerate all states forwards from start-state"
   [sample followers]
   (reduce union #{}
           (take-while #(not= % #{})
@@ -46,7 +46,6 @@ usually, the predicate p determines whether n is a member of a set of integers."
     0
     (let [following-states (followers state)
           follower-gs (into #{} (map #(sample-grundy-number followers sample %) following-states))]
-      (prn state " " following-states " " follower-gs)
       (mex follower-gs))))
 
 (defn nim-sum

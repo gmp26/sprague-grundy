@@ -40,7 +40,20 @@
     (set (mapcat followers state))
     (map #(make-move state %) (unlimited-moves state))))
 
-(def end-state? empty?)
+(defn limited-followers
+  "followers are the states that can follow this state (or set of states) according to the game rules."
+  [limit state]
+  (if (set? state)
+    (set (mapcat limited-followers limit state))
+    (map #(make-move state %) (limited-moves limit state))))
+
+(defn sample-followers
+  "return the correct followers function for the given state"
+  [sample]
+  (if (:limit sample)
+    (partial limited-followers (:limit sample))
+    (partial followers)
+    ))
 
 ;;;
 ;; The state of a snail is the vector of locations of coins
@@ -49,16 +62,16 @@
 ; (defonce snail (atom [4 8 13 18]))
 (defn heap-equivalent
   "Returns a seq of equivalent nim heaps for a snail game-state"
-  [state]
+  [limit state]
   (if (empty? state)
     '(0)
     (map first (partition 2 (conj (vec (gaps state)) nil)))))
 
-#_(defn sample-heaps
+(defn sample-heaps
   "Returns a curried function of state giving only the heap-equivalent"
-  [state]
+  [sample]
   (fn [state]
-    (heap-equivalent empty? state))
+    (heap-equivalent (:limit sample) state))
   )
 
 
