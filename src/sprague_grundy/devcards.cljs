@@ -2,9 +2,11 @@
   (:require
    [sablono.core :as sab :include-macros true]
    [sprague-grundy.core :as core]
+   [gotit.samples :refer [gotit1 gotit2 gotit1-followers gotit2-followers gotit1-heaps gotit2-heaps gotit1-grundy gotit2-grundy]]
    [gotit.rules :as gotit]
+   [snail.samples :refer [snail1 snail2 snail1-followers snail2-followers snail1-heaps snail2-heaps]]
    [snail.rules :as snail]
-   [cljs.test :refer-macros [is testing run-tests]]
+   [cljs.test :refer-macros [is are testing run-tests]]
    )
   (:require-macros
    [devcards.core :as dc :refer [defcard deftest]]))
@@ -32,90 +34,105 @@
   "nim-sum tests"
   (is (= (core/nim-sum 5 5) 0))
   (is (= (core/nim-sum [5 5]) 0)))
-;;
-;; Typical gotit game settings
-;;
-(def gotit (atom  {:start 0
-                   :target 23
-                   :limit 4
-                   :followers (fn [settings state] (gotit/followers (:target settings) (:limit settings) state))
-                   }))
 
-(defcard gotit.rules
-  (let [settings @gotit]
-    (sab/html [:div
-               [:h3 "Gotit with environment {:start " (:start settings)
-                " :target " (:target settings)
-                " :limit " (:limit settings) "}"]
-               [:p (str " followers 0 => " (gotit/followers 23 4 0))]
-               [:p (str " followers 21 => " (gotit/followers 23 4 21))]
-               [:p (str " forward  states =>" (core/states-> @gotit))]
-               ])))
+(deftest gotit-state-list
+  "gotit1 states"
+  (is (= (core/states-> gotit1 gotit1-followers)
+         #{0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23}))
+  )
 
-(defcard gotit.heap-equivalents
-  (let [settings @gotit]
-    (sab/html [:div
-                   [:h3 "Gotit heap equivalents using mod"]
-                   [:p "(heap-equivalent 23) => " (gotit/heap-equivalent settings 23)]
-                   [:p "(heap-equivalent 22) => " (gotit/heap-equivalent settings 22)]
-                   [:p "(heap-equivalent 21) => " (gotit/heap-equivalent settings 21)]
-                   [:p "(heap-equivalent 20) => " (gotit/heap-equivalent settings 20)]
-                   [:p "(heap-equivalent 19) => " (gotit/heap-equivalent settings 19)]
-                   [:p "(heap-equivalent 18) => " (gotit/heap-equivalent settings 18)]
-                   ])))
+(deftest gotit-follower-tests
+  (testing "gotit1"
+    (is (= (gotit1-followers 13) #{14 15 16 17}))
+    (is (= (gotit1-followers #{14 15 16 17}) #{15 16 17 18 19 20 21}))
+    (is (= (gotit1-followers #{21 22}) #{22 23}))
+    (is (= (gotit1-followers 23) #{})))
+  (testing "gotit2"
+    (is (= (gotit2-followers 13) #{14 15}))
+    (is (= (gotit2-followers #{14 15 16 17}) #{15 16 17 18 19}))
+    (is (= (gotit2-followers #{21 22}) #{22 23}))
+    (is (= (gotit2-followers 23) #{}))))
 
-(defcard gotit.nimbers
-  (let [settings @gotit]
-        (sab/html [:div
-                   [:h3 "Gotit nimber calculation using game graph"]
-                   [:p "(grundy-number 23) => " (core/grundy-number settings 23)]
-                   [:p "(grundy-number 22) => " (core/grundy-number settings 22)]
-                   [:p "(grundy-number 21) => " (core/grundy-number settings 21)]
-                   [:p "(grundy-number 20) => " (core/grundy-number settings 20)]
-                   [:p "(grundy-number 19) => " (core/grundy-number settings 19)]
-                   [:p "(grundy-number 18) => " (core/grundy-number settings 18)]
-                   ])))
+#_(defcard gotit.heap-equivalents
+  (sab/html [:div
+             [:h3 "Gotit heap equivalents using mod"]
+             [:p "(heap-equivalent 23) => " (gotit1-heaps 23)]
+             [:p "(heap-equivalent 22) => " (gotit1-heaps 22)]
+             [:p "(heap-equivalent 21) => " (gotit1-heaps 21)]
+             [:p "(heap-equivalent 20) => " (gotit1-heaps 20)]
+             [:p "(heap-equivalent 19) => " (gotit1-heaps 19)]
+             [:p "(heap-equivalent 18) => " (gotit1-heaps 18)]
+             ]))
+
+(deftest gotit-heaps
+  (testing "gotit1"
+    (is (= (gotit1-heaps 18) 0))
+    (is (= (gotit1-heaps 20) 3))
+    (is (= (gotit1-heaps 23) 0))
+    (is (= (gotit1-heaps 1)  2))
+    )
+  (testing "gotit2"
+    (is (= (gotit2-heaps 18) 2))
+    (is (= (gotit2-heaps 20) 0))
+    (is (= (gotit2-heaps 23) 0))
+    (is (= (gotit2-heaps 1)  1))
+    ))
+
+#_(defcard gotit.nimbers
+  (sab/html [:div
+             [:h3 "Gotit nimber calculation using game graph"]
+             [:p "(grundy-number 23) => " (gotit1-grundy 23)]
+             [:p "(grundy-number 22) => " (gotit1-grundy 22)]
+             [:p "(grundy-number 21) => " (gotit1-grundy 21)]
+             [:p "(grundy-number 20) => " (gotit1-grundy 20)]
+             [:p "(grundy-number 19) => " (gotit1-grundy 19)]
+             [:p "(grundy-number 18) => " (gotit1-grundy 18)]
+             ]))
+
+(deftest gotit-nimbers-from-game-graph
+  (testing "gotit1"
+    (is (= (gotit1-grundy 18) 0))
+    (is (= (gotit1-grundy 20) 3))
+    (is (= (gotit1-grundy 23) 0))
+    #_(is (= (gotit1-grundy 1)  2))  "correct but incredibly slow"
+    )
+  (testing "gotit2"
+    (is (= (gotit2-grundy 18) 2))
+    (is (= (gotit2-grundy 20) 0))
+    (is (= (gotit2-grundy 23) 0))
+    #_(is (= (gotit2-grundy 1)  1))  "correct but incredibly slow"
+    ) )
 
 ;;
 ;; Typical snail game settings
 ;;
-(def snail (atom  {:start [4 8]
-                   :target []
-                   :limit 1000
-                   :followers (fn [settings state] (snail/followers state))}))
-
 (defcard snail.rules
-  (let [settings @snail]
-    (sab/html [:div
-               [:h3 "Snail {:start " (str (:start settings)
-                                          " :target " (:target settings)
-                                          " :limit " (:limit settings)) "}"]
-               [:p (str " followers [4 8 13 18] => " (snail/followers [4 8 13 18]))]])))
+  (sab/html [:div
+             [:h3 (str "Snail {:start " (:start snail1)
+                       " :limit " (:limit snail1)) "}"]
+             [:p (str " followers [4 8 13 18] => " (snail1-followers [4 8 13 18]))]]))
 
-(defcard snail.heap-equivalents
-  (let [
-        check (fn [state] [:p "(heap-equivalent " (str state) ") => "
-                          (str (snail/heap-equivalent snail/end-state? state)
-                               " nim-sum => " (str (core/nim-sum (snail/heap-equivalent snail/end-state? state))))])]
-        (sab/html [:div
-                   [:h3 "Snail heap-equivalents by inspection"]
-                   (check [4 8 13 18])
-                   (check [4 8 13 17])
-                   (check [8 13 17])
-                   (check [3 13 17])
-                   (check [3 13 14])
-                   (check [13 14])
-                   (check [5 14])
-                   (check [5 6])
-                   (check [6])
-                   (check [])
-                   ])))
 
 (deftest test-snail-heaps
-  "## tests"
-  (testing "heap equivalents"
+  (testing "snail1 heap equivalents"
     (let [heap-check (fn [state heaps]
-                       (is (= (snail/heap-equivalent snail/end-state? state) heaps) (str state " -> " heaps)))]
+                       (is (= (snail1-heaps state) heaps) (str state " -> " heaps)))]
+      (heap-check [4 8 13 18] [4 3])
+      (heap-check [4 8 13 17] [3 3])
+      (heap-check [8 13 17] [3 8])
+      (heap-check [3 13 17] [3 3])
+      (heap-check [3 13 14] [0 3])
+      (heap-check [13 14] [0])
+      (heap-check [5 14] [8])
+      (heap-check [5 6] [0])
+      (heap-check [6] [6])
+      (heap-check [] [0])
+      )))
+
+(deftest test-snail2-heaps
+  (testing "snail2 heap equivalents"
+    (let [heap-check (fn [state heaps]
+                       (is (= (snail2-heaps state) heaps) (str state " -> " heaps)))]
       (heap-check [4 8 13 18] [4 3])
       (heap-check [4 8 13 17] [3 3])
       (heap-check [8 13 17] [3 8])

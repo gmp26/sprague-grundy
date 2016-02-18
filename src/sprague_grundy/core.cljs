@@ -3,18 +3,26 @@
 
 (enable-console-print!)
 
-(defrecord Game [start end-state? limit followers heap-equivalent])
+;;;
+;; A nim-like game has a game identifier (usually a keyword), a title, a start state, an end state, a set of rules that indicate which states
+;; may follow a given state (or set of states). It may also have a partition mechanism which
+;; allows the game to be split into a disjunctive sum of nim heaps.
+;;
+;; Fields in this record are designed to be easily configurable (e.g. in a url), so follower rules
+;; and heap-equivalent rules are generated from the game id.
+;;;
+(defrecord Game [id title start target limit])
 
 (defn boundary
-  [growth-fn settings a-set]
-  (difference (growth-fn settings a-set) a-set))
+  [followers a-set]
+  (difference (followers a-set) a-set))
 
 (defn states->
   "enumerate all states forwards from start-state by following precursors"
-  [settings]
+  [sample followers]
   (reduce union #{}
           (take-while #(not= % #{})
-                      (iterate #(boundary (:followers settings) settings %) #{(:start settings)}))))
+                      (iterate #(boundary followers %) #{(:start sample)}))))
 
 (defn mex
   "return the minimum excludant - the first number n in (range) such that (not (p n))
@@ -31,14 +39,14 @@ usually, the predicate p determines whether n is a member of a set of integers."
 ;; (mex #{0 1 3 5 2}) => 4)
 ;; (mex #{1 3 5 2}) => 0
 
-(defn grundy-number
+(defn sample-grundy-number
   "Calculate the grundy number of any state given by the game described in settings"
-  [settings state]
-  (if (= state (:target settings))
+  [followers sample state]
+  (if (= state (:target sample))
     0
-    (let [followers ((:followers settings) settings state)
-          follower-gs (into #{} (map #(grundy-number settings %) followers))]
-      (prn state " " followers " " follower-gs)
+    (let [following-states (followers state)
+          follower-gs (into #{} (map #(sample-grundy-number followers sample %) following-states))]
+      (prn state " " following-states " " follower-gs)
       (mex follower-gs))))
 
 (defn nim-sum
@@ -48,9 +56,6 @@ usually, the predicate p determines whether n is a member of a set of integers."
   ([heaps]
    (apply bit-xor heaps))
   )
-
-
-
 
 (defn msb
   "most significant bit of a positive integer or zero"

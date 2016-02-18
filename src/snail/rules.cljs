@@ -3,7 +3,6 @@
 ;;;
 ;; A snail state is a vector of coin locations
 ;;
-
 (defn- gaps [state]
   "but the gaps between the coins are more useful"
   (reverse (cons (first state) (map dec (map - (rest state) state)))))
@@ -50,9 +49,17 @@
 ; (defonce snail (atom [4 8 13 18]))
 (defn heap-equivalent
   "Returns a seq of equivalent nim heaps for a snail game-state"
-  [end-state? state]
-  (if (end-state? state)
+  [state]
+  (if (empty? state)
     '(0)
     (map first (partition 2 (conj (vec (gaps state)) nil)))))
+
+#_(defn sample-heaps
+  "Returns a curried function of state giving only the heap-equivalent"
+  [state]
+  (fn [state]
+    (heap-equivalent empty? state))
+  )
+
 
 ;;;;;; generic stuff

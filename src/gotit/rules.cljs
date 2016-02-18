@@ -9,16 +9,27 @@
 ;;
 ;; and the current state.
 ;;;
-(comment)
+
 (defn followers
   "followers are the states that can follow state according to the game rules."
   [target limit state]
   (if (set? state)
     (set (mapcat #(followers target limit  %) state))
-    (map #(+ state %) (range 1 (inc (min (- target state) limit))))))
+    (set (map #(+ state %) (range 1 (inc (min (- target state) limit)))))))
+
+(defn sample-followers
+  "partially curried followers - returns a function of state"
+  [sample]
+  (partial followers (:target sample) (:limit sample)))
 
 
 (defn heap-equivalent
   "The nim heap equivalent of a gotit state"
-  [settings state]
-  (mod (- (:target settings) state) (inc (:limit settings))))
+  [target limit state]
+  (mod (- target state) (inc limit)))
+
+
+(defn sample-heaps
+  "partially curried heaps - returns a function of state"
+  [sample]
+  (partial heap-equivalent (:target sample) (:limit sample)))
