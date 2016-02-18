@@ -4,6 +4,7 @@
    [sprague-grundy.core :as core]
    [gotit.rules :as gotit]
    [snail.rules :as snail]
+   [cljs.test :refer-macros [is testing run-tests]]
    )
   (:require-macros
    [devcards.core :as dc :refer [defcard deftest]]))
@@ -11,13 +12,26 @@
 (enable-console-print!)
 
 
-(defcard mex
+#_(defcard mex
   (sab/html
    [:div
     [:p "mex returns the minimum excludant - the smallest non-negative integer that is not present!"]
     [:p "mex #{0 1 5 3 2} = " (core/mex #{0 1 5 3 2})]
     [:p "mex #{1 5 3 2} = " (core/mex #{1 5 3 2})]]))
 
+(deftest mex
+  "Minimum excludant tests"
+    (is (= (core/mex #{0 1 5 2 4}) 3))
+    (is (= (core/mex #{5 4 3 2 1 0}) 6))
+    (is (= (core/mex #{0}) 1))
+    (is (= (core/mex #{}) 0))
+    (is (= (core/mex #{1 2 3}) 0))
+    )
+
+(deftest nim-sum
+  "nim-sum tests"
+  (is (= (core/nim-sum 5 5) 0))
+  (is (= (core/nim-sum [5 5]) 0)))
 ;;
 ;; Typical gotit game settings
 ;;
@@ -95,5 +109,21 @@
                    (check [5 6])
                    (check [6])
                    (check [])
-                   ]))
-  )
+                   ])))
+
+(deftest test-snail-heaps
+  "## tests"
+  (testing "heap equivalents"
+    (let [heap-check (fn [state heaps]
+                       (is (= (snail/heap-equivalent snail/end-state? state) heaps) (str state " -> " heaps)))]
+      (heap-check [4 8 13 18] [4 3])
+      (heap-check [4 8 13 17] [3 3])
+      (heap-check [8 13 17] [3 8])
+      (heap-check [3 13 17] [3 3])
+      (heap-check [3 13 14] [0 3])
+      (heap-check [13 14] [0])
+      (heap-check [5 14] [8])
+      (heap-check [5 6] [0])
+      (heap-check [6] [6])
+      (heap-check [] [0])
+      )))

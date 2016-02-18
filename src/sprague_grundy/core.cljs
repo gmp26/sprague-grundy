@@ -3,6 +3,8 @@
 
 (enable-console-print!)
 
+(defrecord Game [start end-state? limit followers heap-equivalent])
+
 (defn boundary
   [growth-fn settings a-set]
   (difference (growth-fn settings a-set) a-set))
@@ -16,8 +18,8 @@
 
 (defn mex
   "return the minimum excludant - the first number n in (range) such that (not (p n))
-usually, the predicate p determines whether n is a member of a set of integers."  (
-   [p]
+usually, the predicate p determines whether n is a member of a set of integers."
+  ([p]
    (mex p 0))
 
   ([p n]
@@ -39,8 +41,15 @@ usually, the predicate p determines whether n is a member of a set of integers."
       (prn state " " followers " " follower-gs)
       (mex follower-gs))))
 
-(defn nim-sum [heaps]
-  (apply bit-xor heaps))
+(defn nim-sum
+  ([a b & c]
+   (nim-sum (conj c a b)))
+
+  ([heaps]
+   (apply bit-xor heaps))
+  )
+
+
 
 
 (defn msb
