@@ -62,16 +62,26 @@
 ; (defonce snail (atom [4 8 13 18]))
 (defn heap-equivalent
   "Returns a seq of equivalent nim heaps for a snail game-state"
-  [limit state]
-  (if (empty? state)
-    '(0)
-    (map first (partition 2 (conj (vec (gaps state)) nil)))))
+
+  ([state]
+   (if (empty? state)
+     '(0)
+     (map first (partition 2 (conj (vec (gaps state)) nil))))
+   )
+
+  ([limit state]
+   (if (empty? state)
+     '(0)
+     (map (comp #(mod % (inc limit)) first) (partition 2 (conj (vec (gaps state)) nil))))))
+
 
 (defn sample-heaps
   "Returns a curried function of state giving only the heap-equivalent"
   [sample]
   (fn [state]
-    (heap-equivalent (:limit sample) state))
+    (if-let [lim (:limit sample)]
+      (heap-equivalent lim state)
+      (heap-equivalent state)))
   )
 
 

@@ -133,14 +133,14 @@
   (testing "snail2 heap equivalents"
     (let [heap-check (fn [state heaps]
                        (is (= (snail2-heaps state) heaps) (str state " -> " heaps)))]
-      (heap-check [4 8 13 18] [4 3])
-      (heap-check [4 8 13 17] [3 3])
-      (heap-check [8 13 17] [3 8])
-      (heap-check [3 13 17] [3 3])
-      (heap-check [3 13 14] [0 3])
+      (heap-check [4 8 13 18] [1 0])
+      (heap-check [4 8 13 17] [0 0])
+      (heap-check [8 13 17] [0 2])
+      (heap-check [3 13 17] [0 0])
+      (heap-check [3 13 14] [0 0])
       (heap-check [13 14] [0])
-      (heap-check [5 14] [8])
+      (heap-check [5 14] [2])
       (heap-check [5 6] [0])
-      (heap-check [6] [6])
+      (heap-check [6] [0])
       (heap-check [] [0])
       )))
