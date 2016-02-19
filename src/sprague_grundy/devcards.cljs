@@ -6,6 +6,8 @@
    [gotit.rules :as gotit]
    [snail.samples :refer [snail1 snail2 snail1-followers snail2-followers snail1-heaps snail2-heaps]]
    [snail.rules :as snail]
+   [dollar.samples :refer [dollar1 dollar2 dollar1-followers dollar2-followers dollar1-heaps dollar2-heaps]]
+   [dollar.rules :as dollar]
    [cljs.test :refer-macros [is are testing run-tests]]
    )
   (:require-macros
@@ -13,22 +15,22 @@
 
 (enable-console-print!)
 
-
-#_(defcard mex
-  (sab/html
-   [:div
-    [:p "mex returns the minimum excludant - the smallest non-negative integer that is not present!"]
-    [:p "mex #{0 1 5 3 2} = " (core/mex #{0 1 5 3 2})]
-    [:p "mex #{1 5 3 2} = " (core/mex #{1 5 3 2})]]))
+(comment
+  #_(defcard mex
+      (sab/html
+       [:div
+        [:p "mex returns the minimum excludant - the smallest non-negative integer that is not present!"]
+        [:p "mex #{0 1 5 3 2} = " (core/mex #{0 1 5 3 2})]
+        [:p "mex #{1 5 3 2} = " (core/mex #{1 5 3 2})]])))
 
 (deftest mex
   "Minimum excludant tests"
-    (is (= (core/mex #{0 1 5 2 4}) 3))
-    (is (= (core/mex #{5 4 3 2 1 0}) 6))
-    (is (= (core/mex #{0}) 1))
-    (is (= (core/mex #{}) 0))
-    (is (= (core/mex #{1 2 3}) 0))
-    )
+  (is (= (core/mex #{0 1 5 2 4}) 3))
+  (is (= (core/mex #{5 4 3 2 1 0}) 6))
+  (is (= (core/mex #{0}) 1))
+  (is (= (core/mex #{}) 0))
+  (is (= (core/mex #{1 2 3}) 0))
+  )
 
 (deftest nim-sum
   "nim-sum tests"
@@ -54,15 +56,15 @@
     (is (= (gotit2-followers 23) #{}))))
 
 #_(defcard gotit.heap-equivalents
-  (sab/html [:div
-             [:h3 "Gotit heap equivalents using mod"]
-             [:p "(heap-equivalent 23) => " (gotit1-heaps 23)]
-             [:p "(heap-equivalent 22) => " (gotit1-heaps 22)]
-             [:p "(heap-equivalent 21) => " (gotit1-heaps 21)]
-             [:p "(heap-equivalent 20) => " (gotit1-heaps 20)]
-             [:p "(heap-equivalent 19) => " (gotit1-heaps 19)]
-             [:p "(heap-equivalent 18) => " (gotit1-heaps 18)]
-             ]))
+(sab/html [:div
+           [:h3 "Gotit heap equivalents using mod"]
+           [:p "(heap-equivalent 23) => " (gotit1-heaps 23)]
+           [:p "(heap-equivalent 22) => " (gotit1-heaps 22)]
+           [:p "(heap-equivalent 21) => " (gotit1-heaps 21)]
+           [:p "(heap-equivalent 20) => " (gotit1-heaps 20)]
+           [:p "(heap-equivalent 19) => " (gotit1-heaps 19)]
+           [:p "(heap-equivalent 18) => " (gotit1-heaps 18)]
+           ]))
 
 (deftest gotit-heaps
   (testing "gotit1"
@@ -79,22 +81,22 @@
     ))
 
 #_(defcard gotit.nimbers
-  (sab/html [:div
-             [:h3 "Gotit nimber calculation using game graph"]
-             [:p "(grundy-number 23) => " (gotit1-grundy 23)]
-             [:p "(grundy-number 22) => " (gotit1-grundy 22)]
-             [:p "(grundy-number 21) => " (gotit1-grundy 21)]
-             [:p "(grundy-number 20) => " (gotit1-grundy 20)]
-             [:p "(grundy-number 19) => " (gotit1-grundy 19)]
-             [:p "(grundy-number 18) => " (gotit1-grundy 18)]
-             ]))
+(sab/html [:div
+           [:h3 "Gotit nimber calculation using game graph"]
+           [:p "(grundy-number 23) => " (gotit1-grundy 23)]
+           [:p "(grundy-number 22) => " (gotit1-grundy 22)]
+           [:p "(grundy-number 21) => " (gotit1-grundy 21)]
+           [:p "(grundy-number 20) => " (gotit1-grundy 20)]
+           [:p "(grundy-number 19) => " (gotit1-grundy 19)]
+           [:p "(grundy-number 18) => " (gotit1-grundy 18)]
+           ]))
 
 (deftest gotit-nimbers-from-game-graph
   (testing "gotit1"
     (is (= (gotit1-grundy 18) 0))
     (is (= (gotit1-grundy 20) 3))
     (is (= (gotit1-grundy 23) 0))
-    #_(is (= (gotit1-grundy 1)  2))  "correct but incredibly slow"
+    #_(is (= (gotit1-grundy 1)  2))  "correct but takes 5 secs or so"
     )
   (testing "gotit2"
     (is (= (gotit2-grundy 18) 2))
@@ -103,14 +105,33 @@
     #_(is (= (gotit2-grundy 1)  1))  "correct but incredibly slow"
     ) )
 
-;;
-;; Typical snail game settings
-;;
-(defcard snail.rules
-  (sab/html [:div
-             [:h3 (str "Snail {:start " (:start snail1)
-                       " :limit " (:limit snail1)) "}"]
-             [:p (str " followers [4 8 13 18] => " (snail1-followers [4 8 13 18]))]]))
+  ;;
+  ;; Typical snail game settings
+  ;;
+
+#_(defcard snail.rules
+(sab/html [:div
+           [:h3 (str "Snail {:start " (:start snail1)
+                     " :limit " (:limit snail1)) "}"]
+           [:p (str " followers [4 8 13 18] => " (snail1-followers [4 8 13 18]))]]))
+
+(deftest snail-rules-test
+  (testing "snail1"
+    (is (= (snail1-followers [4 8 13 18])  [[8 13 18]
+                                            [1 8 13 18]
+                                            [2 8 13 18]
+                                            [3 8 13 18]
+                                            [4 5 13 18]
+                                            [4 6 13 18]
+                                            [4 7 13 18]
+                                            [4 8 9 18]
+                                            [4 8 10 18]
+                                            [4 8 11 18]
+                                            [4 8 12 18]
+                                            [4 8 13 14]
+                                            [4 8 13 15]
+                                            [4 8 13 16]
+                                            [4 8 13 17]]))))
 
 
 (deftest test-snail-heaps
@@ -144,3 +165,21 @@
       (heap-check [6] [0])
       (heap-check [] [0])
       )))
+
+(deftest dollar-rules-test
+  (testing "dollar1"
+    (is (= (dollar1-followers [4 8 13 18])  [
+                                             [1 8 13 18]
+                                             [2 8 13 18]
+                                             [3 8 13 18]
+                                             [4 5 13 18]
+                                             [4 6 13 18]
+                                             [4 7 13 18]
+                                             [4 8 9 18]
+                                             [4 8 10 18]
+                                             [4 8 11 18]
+                                             [4 8 12 18]
+                                             [4 8 13 14]
+                                             [4 8 13 15]
+                                             [4 8 13 16]
+                                             [4 8 13 17]]))))
