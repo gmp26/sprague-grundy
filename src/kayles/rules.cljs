@@ -4,11 +4,31 @@
 ;; A kayles state is a vector of coin locations
 ;;
 
+
+(defn takeout-pins
+  "list outcomes when taking out a single pin from a row"
+  [pin-count remove-count]
+  (let [n (- pin-count remove-count)]
+    (map (fn [i]
+           (cond
+             (= 0 i) [(- n i)]
+             (= 0 (- n i)) [i]
+             :else  [i (- n i)])) (range 0 n)))
+  )
+
+#_(defn takeout-double-pin
+  "hi"
+  [pin-count])
+
+(defn aim-at-row
+  "aim at a single row - anticipate all possible future states."
+  [pin-count]
+  (reduce conj (takeout-pins pin-count 1) (takeout-pins pin-count 2)))
+
 (defn single-moves
   "list possible moves from state. State is a vector of contiguous pin counts"
   [state]
-  (for [pins state]
-    pins)
+  (map aim-at-row state)
 )
 
 (defn both-pos? [pair]

@@ -8,6 +8,7 @@
    [snail.rules :as snail]
    [dollar.samples :refer [dollar1 dollar2 dollar1-followers dollar2-followers dollar1-heaps dollar2-heaps]]
    [dollar.rules :as dollar]
+   [kayles.rules :as kayles]
    [cljs.test :refer-macros [is are testing run-tests]]
    )
   (:require-macros
@@ -15,13 +16,12 @@
 
 (enable-console-print!)
 
-(comment
-  #_(defcard mex
-      (sab/html
-       [:div
-        [:p "mex returns the minimum excludant - the smallest non-negative integer that is not present!"]
-        [:p "mex #{0 1 5 3 2} = " (core/mex #{0 1 5 3 2})]
-        [:p "mex #{1 5 3 2} = " (core/mex #{1 5 3 2})]])))
+#_(defcard mex
+(sab/html
+ [:div
+  [:p "mex returns the minimum excludant - the smallest non-negative integer that is not present!"]
+  [:p "mex #{0 1 5 3 2} = " (core/mex #{0 1 5 3 2})]
+  [:p "mex #{1 5 3 2} = " (core/mex #{1 5 3 2})]]))
 
 (deftest mex
   "Minimum excludant tests"
