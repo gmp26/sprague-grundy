@@ -9,6 +9,7 @@
    [dollar.samples :refer [dollar1 dollar2 dollar1-followers dollar2-followers dollar1-heaps dollar2-heaps]]
    [dollar.rules :as dollar]
    [kayles.rules :as kayles]
+   [kayles.samples :refer [kayles1 kayles2 kayles1-followers kayles2-followers kayles1-heaps kayles2-heaps]]
    [cljs.test :refer-macros [is are testing run-tests]]
    )
   (:require-macros

@@ -1,5 +1,6 @@
 (ns ^:figwheel-always kayles.rules
-    (:require [sprague-grundy.core :as core]))
+    (:require [sprague-grundy.core :as core]
+              [clojure.set :refer [union]]))
 ;;;
 ;; A kayles state is a vector of coin locations
 ;;
@@ -9,26 +10,62 @@
   "list outcomes when taking out contiguous pins from a row"
   [pin-count remove-count]
   (let [n (- pin-count remove-count)]
-    (map (fn [i]
-           (cond
-             (= 0 i) [(- n i)]
-             (= 0 (- n i)) [i]
-             :else  [i (- n i)])) (range 0 n)))
+    (if (<= n 0)
+      #{}
+      (into #{[n]}
+            (for [i (range 1 n)]
+              [i (- n i)])))
+    )
   )
 
-#_(defn takeout-double-pin
-  "hi"
-  [pin-count])
+(defn takeout-single-pins
+  "list outcomes when taking out contiguous pins from a row"
+  [pin-count]
+  (let [n pin-count]
+    (map (fn [i]
+           (cond
+             (= 0 i) [0 (dec (- n i))]
+             (= i n) [(dec i) 0]
+             :else  [(dec i) 0 (- n i)])) (range 0 pin-count)))
+  )
 
 (defn aim-at-row
   "aim at a single row - anticipate all possible future states."
   [pin-count]
   (into (takeout-pins pin-count 1) (takeout-pins pin-count 2)))
 
+(defn all-moves
+  "aim and hit each row in turn, returning all possible outcomes"
+  [state]
+  (map-indexed
+   (fn [loc1 pin-count1]
+     (map-indexed
+      (fn [loc2 pin-count2]
+        (if (= loc1 loc2)
+          (let [pc (aim-at-row pin-count1)]
+            (if (empty? pc) 0 pc))
+          pin-count2))
+      state))
+   state)
+  )
+
+(defn all-moves-from-state
+  [state]
+  #_(reduce union #{} (for [row state]
+                        (aim-at-row row)))
+  (for [row1 state
+        row2 state
+        :when (not= row1 row2)]
+    1
+
+
+    )
+  )
+
 (defn single-moves
   "list possible moves from state. State is a vector of contiguous pin counts"
   [state]
-  (map aim-at-row state)
+  (vec (into #{} (map aim-at-row state)))
 )
 
 ;;;
@@ -72,18 +109,25 @@
       ((k-nim-values 6) b))))
 
 ;;;
-;; The state of a kayles is the vector of locations of coins
+;; The state of a kayles game is a vector of pin counts
+;; ||| ||||||| ||||| is [3 7 5]
+;; each of which has a nim heap eqivalent - in this case [3 2 4]
+;; and a (core/nim-sum 3 2 4) = 5
+;;
 ;;;
 
 
-
 ; e.g.
-; (defonce kayles (atom [4 8 13 18]))
 (defn heap-equivalent
   "Returns a seq of equivalent nim heaps for a kayles game-state"
   [state]
-  (core/nim-sum (map k state))
+  (map k state)
   )
+
+(defn deltas-aiming-for
+  [pin-count]
+  (let [heap (k pin-count)]
+    (map #(reduce core/nim-sum heap %) (map heap-equivalent (aim-at-row pin-count)))))
 
 
 (defn sample-heaps

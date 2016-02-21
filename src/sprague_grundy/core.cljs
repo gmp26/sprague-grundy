@@ -11,6 +11,12 @@
 ;; Fields in this record are designed to be easily configurable (e.g. in a url), so follower rules
 ;; and heap-equivalent rules are generated from the game id.
 ;;;
+(defprotocol IGame
+  "a protocol for nim-like games"
+  (followers [this] "followers of a given state")
+  (heap-equivalents [this] "heap equivalents of a state")
+  )
+
 (defrecord Game [id title start target limit])
 
 (defn boundary
@@ -31,7 +37,6 @@ usually, the predicate p determines whether n is a member of a set of integers."
    (mex p 0))
 
   ([p n]
-   "return the minimum excludant - the first number not meeting the predicate starting at n"
    (loop [m n]
      (if (p m)
        (recur (inc m))
