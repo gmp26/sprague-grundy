@@ -74,17 +74,32 @@
 (defn heap-equivalents
   "Returns a seq of equivalent nim heaps for a kayles game-state"
   [pins]
-  (if (set? pins)
-    (for [pins' pins]
-      (map k (stands pins')))
+  (if (vector? (first pins))
+    (map #(map k (stands %)) pins)
     (map k (stands pins)))
   )
 
-#_(defn deltas-aiming-for
-  [pin-count]
-  (let [heap (k pin-count)]
-    (map #(reduce core/nim-sum heap %) (map heap-equivalent (aim-at-row pin-count)))))
+(defn nimber
+  "calculate the single nimber of a state"
+  [pins]
+  (map core/nim-sum (heap-equivalents pins)))
 
+(defn optimal-outcome
+  "choose an optimal next state"
+  [pins]
+  (let [outcomes (vec (followers pins))
+        outcomes-by-nimber (zipmap (nimber outcomes) outcomes)]
+    (prn outcomes-by-nimber)
+    (if-let [winner (outcomes-by-nimber 0)]
+      winner
+      (first outcomes))
+    )
+  )
+
+(defn winner [state]
+  (if (not-any? #(= 1 %) state)
+    (if (= (nimber state) 0) 1 -1)
+    0))
 
 (defn sample-heaps
   "Returns a curried function of state giving only the heap-equivalent"

@@ -37,14 +37,6 @@
                                     :output-to  "resources/public/js/compiled/sprague_grundy_devcards.js"
                                     :output-dir "resources/public/js/compiled/devcards_out"
                                    :source-map-timestamp true }}
-                       {:id "kayles"
-                        :source-paths ["src"]
-                        :figwheel { :devcards true } ;; <- note this
-                        :compiler { :main       "sprague-grundy.kayles-tests"
-                                    :asset-path "js/compiled/kayles_tests_out"
-                                    :output-to  "resources/public/js/compiled/kayles_tests.js"
-                                    :output-dir "resources/public/js/compiled/kayles_tests_out"
-                                    :source-map-timestamp true }}
                        {:id "dev"
                         :source-paths ["src"]
                         :figwheel true
@@ -61,3 +53,15 @@
                                    :optimizations :advanced}}]}
 
   :figwheel { :css-dirs ["resources/public/css"] })
+
+
+
+(comment
+                       {:id "kayles"
+                        :source-paths ["src"]
+                        :figwheel { :devcards true } ;; <- note this
+                        :compiler { :main       "sprague-grundy.kayles-tests"
+                                    :asset-path "js/compiled/kayles_tests_out"
+                                    :output-to  "resources/public/js/compiled/kayles_tests.js"
+                                    :output-dir "resources/public/js/compiled/kayles_tests_out"
+                                    :source-map-timestamp true }}  )

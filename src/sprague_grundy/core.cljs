@@ -13,8 +13,10 @@
 ;;;
 (defprotocol IGame
   "a protocol for nim-like games"
-  (followers [this] "followers of a given state")
-  (heap-equivalents [this] "heap equivalents of a state")
+  (followers [this] "a function giving followers of a given state")
+  (heap-equivalents [this] "a function giving heap equivalents of a state or a vector of states")
+  (nimber [this] "a function giving the nimber of a state")
+  (a-good-outcome [this] "a function returning a good outcome from state")
   )
 
 (defrecord Game [id title start target limit])
@@ -57,29 +59,3 @@ usually, the predicate p determines whether n is a member of a set of integers."
   [n]
   (last (take-while #(>= n (Math.pow 2 %)) (range)))
   )
-
-(defn sample-grundy-number
-  "Calculate the grundy number of any state given by the game described in settings"
-  [followers sample state]
-  (if (= state (:target sample))
-    0
-    (let [following-states (followers state)
-          follower-gs (into #{} (map #(sample-grundy-number followers sample %) following-states))]
-      (mex follower-gs))))
-
-(defn viable-heaps
-  "Return the list of heaps in which we could make a winning move"
-  [heaps]
-  (let [nimber (nim-sum heaps)]
-    (if (= nimber 0)
-      []
-      (distinct (filter #(bit-test % (msb (nim-sum heaps))) heaps)))
-    )
-  )
-
-(defn next-game-state
-  [settings game-state]
-  (let [change-this (rand-nth (viable-heaps ((:heap-equivalent settings) game-state)))]
-    (if (empty? change-this)
-      "We're in a P position. Pick the largest and move a small amount"
-      ())))
