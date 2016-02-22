@@ -2,63 +2,21 @@
     (:require [sprague-grundy.core :as core]
               [clojure.set :refer [union]]))
 ;;;
-;; A kayles state is a vector of coin locations
+;; A kayles state is a vector of 1s and 0s. A 1 is an upright pin, a 0 is down.
 ;;
 
-
-#_(defn takeout-pins
-  "list outcomes when taking out contiguous pins from a row"
-  [pin-count remove-count]
-  (let [n (- pin-count remove-count)]
-    (if (<= n 0)
-      #{}
-      (into #{[n]}
-            (for [i (range 1 n)]
-              [i (- n i)])))
-    )
-  )
-
-(defn takeout-pins
-  "list outcomes when taking out contiguous pins from a row"
-  [pin-count remove-count]
-  (let [n (- pin-count remove-count)]
-    (if (<= n 0)
-      #{[0]}
-      (into #{[n]}
-            (for [i (range 1 n)]
-              [i (- n i)])))
-    )
-  )
-
-(defn aim-at-row
-  "aim at a single row - anticipate all possible future states."
-  [pin-count]
-  (into (takeout-pins pin-count 1) (takeout-pins pin-count 2)))
-
-
-(defn single-moves
-  "list possible moves from state. State is a vector of contiguous pin counts"
-  [state]
-  (vec (into #{} (map aim-at-row state)))
-)
-
-;;;
-;; Public
-;;;
 (defn followers
-  "followers are the states that can follow this state (or set of states) according to the game rules."
-  [state]
-  (if (set? state)
-    (set (mapcat followers state))
-    (for [row state
-          other-states (conj #{} (remove #(= row %) state))]
-      (union (aim-at-row row) other-states)
-      )
-    ))
-;; [2 2 2]
-;; (aim-at-row 2) => #{[1]}
-;; (remove 2 at 1) => [2 0 2]
-;; (replace) => [2 1 2]
+  ([pins]
+   (into (followers pins false) (followers pins true)))
+
+  ([pins double?]
+   (into #{} (let [c (count pins)]
+               (for [hit-loc (range (if double? (dec c) c))
+                     :let [next-loc (if double? (inc hit-loc) nil)]]
+                 (let [single (assoc pins hit-loc 0)]
+                   (if next-loc
+                     (assoc single next-loc 0)
+                     single)))))))
 
 (defn sample-followers
   "return the correct followers function for the given state"
@@ -97,15 +55,24 @@
 ;;
 ;;;
 
+(defn stands
+  "count contiguous stands of pins"
+  [pins]
+  (let [[c a] (reduce (fn [[counts acc] pin]
+                        (if (= pin 1)
+                          [counts (inc acc)]
+                          (if (> acc 0) [(conj counts acc) 0] [counts acc]))
+                        ) [[] 0] pins)]
+    (if (> a 0) (conj c a) c)))
 
 ; e.g.
-(defn heap-equivalent
+(defn heap-equivalents
   "Returns a seq of equivalent nim heaps for a kayles game-state"
-  [state]
-  (map k state)
+  [pins]
+  (map k (stands pins))
   )
 
-(defn deltas-aiming-for
+#_(defn deltas-aiming-for
   [pin-count]
   (let [heap (k pin-count)]
     (map #(reduce core/nim-sum heap %) (map heap-equivalent (aim-at-row pin-count)))))
@@ -114,8 +81,8 @@
 (defn sample-heaps
   "Returns a curried function of state giving only the heap-equivalent"
   [sample]
-  (fn [state]
-    (heap-equivalent state)))
+  (fn [pins]
+    (heap-equivalents pins)))
 
 ;; kayles.rules=> (heap-equivalent [5 8 9])
 ;; 1
