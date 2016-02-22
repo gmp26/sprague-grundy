@@ -7,16 +7,21 @@
 
 (defn followers
   ([pins]
-   (into (followers pins false) (followers pins true)))
+   (if (set? pins)
+     (into #{} (mapcat followers pins))
+     (into (followers pins false) (followers pins true))))
 
   ([pins double?]
-   (into #{} (let [c (count pins)]
-               (for [hit-loc (range (if double? (dec c) c))
-                     :let [next-loc (if double? (inc hit-loc) nil)]]
-                 (let [single (assoc pins hit-loc 0)]
-                   (if next-loc
-                     (assoc single next-loc 0)
-                     single)))))))
+   (if (set? pins)
+     (into #{} (mapcat followers pins true))
+     (into #{} (remove #(= pins %)
+                       (let [c (count pins)]
+                         (for [hit-loc (range (if double? (dec c) c))
+                               :let [next-loc (if double? (inc hit-loc) nil)]]
+                           (let [single (assoc pins hit-loc 0)]
+                             (if next-loc
+                               (assoc single next-loc 0)
+                               single)))))))))
 
 (defn sample-followers
   "return the correct followers function for the given state"
@@ -65,11 +70,14 @@
                         ) [[] 0] pins)]
     (if (> a 0) (conj c a) c)))
 
-; e.g.
+
 (defn heap-equivalents
   "Returns a seq of equivalent nim heaps for a kayles game-state"
   [pins]
-  (map k (stands pins))
+  (if (set? pins)
+    (for [pins' pins]
+      (map k (stands pins')))
+    (map k (stands pins)))
   )
 
 #_(defn deltas-aiming-for

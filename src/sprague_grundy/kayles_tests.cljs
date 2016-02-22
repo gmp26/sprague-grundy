@@ -22,9 +22,35 @@
     (is (= (kayles/stands [1 1 0 1 0]) [2 1]))
     (is (= (kayles/stands [1 1 0 1 1]) [2 2])))
   (testing "followers"
-        (is (= (kayles/followers [1 1 1 1]) #{[0 1 1 1] [1 0 1 1] [1 1 0 1] [1 1 1 0] [0 0 1 1] [1 0 0 1]
-      [1 1 0 0]}))
-    (is (= (kayles/followers [1 1 0 1 0]) #{[0 1 0 1 0] [1 0 0 1 0] [1 1 0 1 0] [1 1 0 0 0] [0 0 0 1 0]})))
+    (is (= (kayles/followers [1 1 1 1]) #{[0 1 1 1] [1 0 1 1] [1 1 0 1] [1 1 1 0] [0 0 1 1] [1 0 0 1] [1 1 0 0]}))
+    (is (= (kayles/followers [1 1 0 1 0]) #{[0 1 0 1 0] [1 0 0 1 0] [1 1 0 0 0] [0 0 0 1 0]}))
+    (is (= (kayles/followers [1 1 1 0 1 1 1 1 0 1 1])
+           #{[1 1 1 0 1 1 1 0 0 1 1]
+             [1 1 0 0 1 1 1 1 0 1 1]
+             [1 0 0 0 1 1 1 1 0 1 1]
+             [1 1 1 0 1 1 1 1 0 0 0]
+             [1 1 1 0 1 1 0 0 0 1 1]
+             [1 1 1 0 1 0 1 1 0 1 1]
+             [1 0 1 0 1 1 1 1 0 1 1]
+             [1 1 1 0 0 1 1 1 0 1 1]
+             [0 0 1 0 1 1 1 1 0 1 1]
+             [1 1 1 0 1 1 1 1 0 1 0]
+             [1 1 1 0 1 0 0 1 0 1 1]
+             [0 1 1 0 1 1 1 1 0 1 1]
+             [1 1 1 0 1 1 1 1 0 0 1]
+             [1 1 1 0 0 0 1 1 0 1 1]
+             [1 1 1 0 1 1 0 1 0 1 1]}))
+    (is (= (kayles/followers [1]) #{[0]}))
+    (is (= (kayles/followers (kayles/followers [1 1])) #{[0 0]}))
+    (is (= (kayles/followers (kayles/followers [1 1])) #{[0 0]}))
+    (is (= (kayles/followers (kayles/followers (kayles/followers [1 1 1]))) #{[0 0 0]}))
+)
   (testing "heap equivalents"
     (is (= (kayles/heap-equivalents [1 1 1 1 1 0 1 1]) [4 2]))
-    (is (= (kayles/heap-equivalents [1 1 1 1 1 1 1 1 0 1 1 1 1]) [1 1]))))
+    (is (= (kayles/heap-equivalents [1 1 1 1 1 1 1 1 0 1 1 1 1])
+           [1 1]
+           )))
+  (testing "heap-equivalents of followers"
+    (is (= (kayles/heap-equivalents (kayles/followers [1 1 0 1 0])) [[1 1] [1 1] [2] [1]]
+           ))
+    ))
