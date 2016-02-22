@@ -6,7 +6,7 @@
 ;;
 
 
-(defn takeout-pins
+#_(defn takeout-pins
   "list outcomes when taking out contiguous pins from a row"
   [pin-count remove-count]
   (let [n (- pin-count remove-count)]
@@ -18,15 +18,16 @@
     )
   )
 
-(defn takeout-single-pins
+(defn takeout-pins
   "list outcomes when taking out contiguous pins from a row"
-  [pin-count]
-  (let [n pin-count]
-    (map (fn [i]
-           (cond
-             (= 0 i) [0 (dec (- n i))]
-             (= i n) [(dec i) 0]
-             :else  [(dec i) 0 (- n i)])) (range 0 pin-count)))
+  [pin-count remove-count]
+  (let [n (- pin-count remove-count)]
+    (if (<= n 0)
+      #{[0]}
+      (into #{[n]}
+            (for [i (range 1 n)]
+              [i (- n i)])))
+    )
   )
 
 (defn aim-at-row
@@ -34,33 +35,6 @@
   [pin-count]
   (into (takeout-pins pin-count 1) (takeout-pins pin-count 2)))
 
-(defn all-moves
-  "aim and hit each row in turn, returning all possible outcomes"
-  [state]
-  (map-indexed
-   (fn [loc1 pin-count1]
-     (map-indexed
-      (fn [loc2 pin-count2]
-        (if (= loc1 loc2)
-          (let [pc (aim-at-row pin-count1)]
-            (if (empty? pc) 0 pc))
-          pin-count2))
-      state))
-   state)
-  )
-
-(defn all-moves-from-state
-  [state]
-  #_(reduce union #{} (for [row state]
-                        (aim-at-row row)))
-  (for [row1 state
-        row2 state
-        :when (not= row1 row2)]
-    1
-
-
-    )
-  )
 
 (defn single-moves
   "list possible moves from state. State is a vector of contiguous pin counts"
@@ -76,8 +50,15 @@
   [state]
   (if (set? state)
     (set (mapcat followers state))
-    (single-moves state)
+    (for [row state
+          other-states (conj #{} (remove #(= row %) state))]
+      (union (aim-at-row row) other-states)
+      )
     ))
+;; [2 2 2]
+;; (aim-at-row 2) => #{[1]}
+;; (remove 2 at 1) => [2 0 2]
+;; (replace) => [2 1 2]
 
 (defn sample-followers
   "return the correct followers function for the given state"

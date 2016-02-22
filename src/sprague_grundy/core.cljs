@@ -44,15 +44,6 @@ usually, the predicate p determines whether n is a member of a set of integers."
 ;; (mex #{0 1 3 5 2}) => 4)
 ;; (mex #{1 3 5 2}) => 0
 
-(defn sample-grundy-number
-  "Calculate the grundy number of any state given by the game described in settings"
-  [followers sample state]
-  (if (= state (:target sample))
-    0
-    (let [following-states (followers state)
-          follower-gs (into #{} (map #(sample-grundy-number followers sample %) following-states))]
-      (mex follower-gs))))
-
 (defn nim-sum
   ([a b & c]
    (nim-sum (conj c a b)))
@@ -66,6 +57,15 @@ usually, the predicate p determines whether n is a member of a set of integers."
   [n]
   (last (take-while #(>= n (Math.pow 2 %)) (range)))
   )
+
+(defn sample-grundy-number
+  "Calculate the grundy number of any state given by the game described in settings"
+  [followers sample state]
+  (if (= state (:target sample))
+    0
+    (let [following-states (followers state)
+          follower-gs (into #{} (map #(sample-grundy-number followers sample %) following-states))]
+      (mex follower-gs))))
 
 (defn viable-heaps
   "Return the list of heaps in which we could make a winning move"

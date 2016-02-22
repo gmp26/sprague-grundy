@@ -19,7 +19,7 @@
 
 (deftest kayles-takeouts
   (testing "single removals"
-    (is (= (kayles/takeout-pins 1 1) #{}))
+    (is (= (kayles/takeout-pins 1 1) #{[0]}))
     (is (= (kayles/takeout-pins 2 1) #{[1]}))
     (is (= (kayles/takeout-pins 3 1) #{[1 1] [2]}))
     (is (= (kayles/takeout-pins 4 1) #{[3] [1 2] [2 1]}))
@@ -30,8 +30,8 @@
 
 (deftest kayles-double-takeouts
   (testing "double removals"
-    (is (= (kayles/takeout-pins 1 2) #{}))
-    (is (= (kayles/takeout-pins 2 2) #{}))
+    (is (= (kayles/takeout-pins 1 2) #{[0]}))
+    (is (= (kayles/takeout-pins 2 2) #{[0]}))
     (is (= (kayles/takeout-pins 3 2) #{[1]}))
     (is (= (kayles/takeout-pins 4 2) #{[1 1] [2]}))
     (is (= (kayles/takeout-pins 5 2) #{[3] [1 2] [2 1]}))
@@ -41,8 +41,8 @@
 
 (deftest kayles-single-or-double-takeouts
   (testing "any removal"
-    (is (= (kayles/aim-at-row 1) #{}))
-    (is (= (kayles/aim-at-row 2) #{[1]}))
+    (is (= (kayles/aim-at-row 1) #{[0]}))
+    (is (= (kayles/aim-at-row 2) #{[0] [1]}))
     (is (= (kayles/aim-at-row 3) #{[1] [1 1] [2]}))
     (is (= (kayles/aim-at-row 4) #{[3] [1 1] [2] [1 2] [2 1]}))
     (is (= (kayles/aim-at-row 5) #{[3] [1 2] [2 1] [4] [1 3] [2 2] [3 1]}))
@@ -51,7 +51,7 @@
 
 (deftest state-followers
   (testing "followers from a state vector"
-    (is (= (kayles/all-moves-from-state [1 1]) #{[1]}))
-    (is (= (kayles/all-moves-from-state [1 1 1]) #{[1 1]}))
-    (is (= (kayles/all-moves-from-state [2]) #{[0] [1]}))
+    (is (= (kayles/followers [1 1]) #{[1]}))
+    (is (= (kayles/followers [1 1 1]) #{[1 1]}))
+    (is (= (kayles/followers [2]) #{[0] [1]}))
     ))
