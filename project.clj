@@ -37,6 +37,38 @@
                                     :output-to  "resources/public/js/compiled/sprague_grundy_devcards.js"
                                     :output-dir "resources/public/js/compiled/devcards_out"
                                    :source-map-timestamp true }}
+                       {:id "gotit"
+                        :source-paths ["src"]
+                        :figwheel true
+                        :compiler {:main       "gotit.main"
+                                   :asset-path "js/compiled/gotit"
+                                   :output-to  "resources/public/js/compiled/gotit.js"
+                                   :output-dir "resources/public/js/compiled/gotit"
+                                   :source-map-timestamp true }}
+                       {:id "snail"
+                        :source-paths ["src"]
+                        :figwheel true
+                        :compiler {:main       "snail.main"
+                                   :asset-path "js/compiled/snail"
+                                   :output-to  "resources/public/js/compiled/snail.js"
+                                   :output-dir "resources/public/js/compiled/snail"
+                                   :source-map-timestamp true }}
+                       {:id "dollar"
+                        :source-paths ["src"]
+                        :figwheel true
+                        :compiler {:main       "gotit.main"
+                                   :asset-path "js/compiled/dollar"
+                                   :output-to  "resources/public/js/compiled/dollar.js"
+                                   :output-dir "resources/public/js/compiled/dollar"
+                                   :source-map-timestamp true }}
+                       {:id "kayles"
+                        :source-paths ["src"]
+                        :figwheel true
+                        :compiler {:main       "kayles.main"
+                                   :asset-path "js/compiled/kayles"
+                                   :output-to  "resources/public/js/compiled/kayles.js"
+                                   :output-dir "resources/public/js/compiled/kayles"
+                                   :source-map-timestamp true }}
                        {:id "dev"
                         :source-paths ["src"]
                         :figwheel true
@@ -48,6 +80,7 @@
                        {:id "prod"
                         :source-paths ["src"]
                         :compiler {:main       "sprague-grundy.core"
+                                   :externs ["resources/externs/svg.js"]
                                    :asset-path "js/compiled/out"
                                    :output-to  "resources/public/js/compiled/sprague_grundy.js"
                                    :optimizations :advanced}}]}

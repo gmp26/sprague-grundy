@@ -11,26 +11,9 @@
 ;; Fields in this record are designed to be easily configurable (e.g. in a url), so follower rules
 ;; and heap-equivalent rules are generated from the game id.
 ;;;
-(defprotocol IGame
-  "a protocol for nim-like games"
-  (followers [this] "a function giving followers of a given state")
-  (heap-equivalents [this] "a function giving heap equivalents of a state or a vector of states")
-  (nimber [this] "a function giving the nimber of a state")
-  (a-good-outcome [this] "a function returning a good outcome from state")
-  )
 
-(defrecord Game [id title start target limit])
 
-(defn boundary
-  [followers a-set]
-  (difference (followers a-set) a-set))
-
-(defn states->
-  "enumerate all states forwards from start-state"
-  [sample followers]
-  (reduce union #{}
-          (take-while #(not= % #{})
-                      (iterate #(boundary followers %) #{(:start sample)}))))
+(defrecord Game [title start target limit])
 
 (defn mex
   "return the minimum excludant - the first number n in (range) such that (not (p n))
@@ -58,4 +41,26 @@ usually, the predicate p determines whether n is a member of a set of integers."
   "most significant bit of a positive integer or zero"
   [n]
   (last (take-while #(>= n (Math.pow 2 %)) (range)))
+  )
+
+(defn game-nimber
+  "calculate the single nimber of a state"
+  [heaps]
+  (map nim-sum heaps))
+
+(defn winner
+  "winner is either the Next player :N or the Previous player :P"
+  [nimber]
+)
+
+
+(defn optimal-outcome
+  "choose an optimal outcome"
+  [outcomes heaps]
+  (let [outcomes-by-nimber (zipmap (game-nimber heaps) outcomes)]
+
+    (if-let [optimal (outcomes-by-nimber 0)]
+      optimal
+      (first outcomes))
+    )
   )

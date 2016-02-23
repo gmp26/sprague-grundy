@@ -9,7 +9,7 @@
    [dollar.samples :refer [dollar1 dollar2 dollar1-followers dollar2-followers dollar1-heaps dollar2-heaps]]
    [dollar.rules :as dollar]
    [kayles.rules :as kayles]
-   [kayles.samples :refer [kayles1 kayles2 kayles1-followers kayles2-followers kayles1-heaps kayles2-heaps]]
+
    [cljs.test :refer-macros [is are testing run-tests]]
    )
   (:require-macros
@@ -30,11 +30,6 @@
   "nim-sum tests"
   (is (= (core/nim-sum 5 5) 0))
   (is (= (core/nim-sum [5 5]) 0)))
-
-(deftest gotit-state-list
-  "gotit1 states"
-  (is (= (core/states-> gotit1 gotit1-followers)
-         #{0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23})))
 
 (deftest gotit-follower-tests
   (testing "gotit1"
